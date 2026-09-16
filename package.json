@@ -1,0 +1,12 @@
+{
+  "name": "sox-off",
+  "private": true,
+  "scripts": {
+    "start": "docker compose up -d --remove-orphans",
+    "start:build": "docker compose up --build -d --remove-orphans",
+    "stop": "docker compose down",
+    "logs": "docker compose logs -f",
+    "status": "docker compose ps",
+    "db:products": "docker compose exec db psql -U app -d products -c 'SELECT * FROM products ORDER BY id DESC;'"
+  }
+}

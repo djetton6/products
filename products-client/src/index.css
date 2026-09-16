@@ -1,0 +1,7 @@
+/* Intentionally minimal — brief says not to spend time on styling. */
+:root {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+body {
+  margin: 2rem;
+}

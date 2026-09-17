@@ -8,10 +8,14 @@ export type ProductRow = {
                 // 2^53 and a BIGSERIAL can exceed that. Treating IDs as
                 // strings (identifiers, not quantities) sidesteps it.
   name: string;
+  price: string;
+  cost: string
 };
 
 export type ProductDto = ProductRow;
 
 export type CreateProductInput = {
   name: string;
+  price: string,
+  cost: string,
 };

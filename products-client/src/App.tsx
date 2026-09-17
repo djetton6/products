@@ -5,7 +5,10 @@ function App() {
   const [products, setProducts] = useState<Product[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+  const [cost, setCost] = useState('')
   const [submitting, setSubmitting] = useState(false);
+
 
   useEffect(() => {
     fetchProducts()
@@ -20,9 +23,11 @@ function App() {
     setSubmitting(true);
     setError(null);
     try {
-      const created = await createProduct(trimmed);
+      const created = await createProduct({ name: name.trim(), price, cost });
       setProducts((prev) => (prev ? [created, ...prev] : [created]));
       setName('');
+      setPrice('')
+      setCost('')
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to create product');
     } finally {
@@ -33,17 +38,41 @@ function App() {
   return (
     <main>
       <h1>Products</h1>
-      <div>
-        <label htmlFor="name">Product name</label>
-        <br />
-        <input
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleCreate();
-          }}
-        />
+      <div className="product-form">
+        <div className="form-field">
+          <label htmlFor="name">Product name</label>
+          <input
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleCreate();
+            }}
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="price">Product price</label>
+          <input
+            id="price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleCreate();
+            }}
+          />
+        </div>
+        <div className="form-field">
+          <label htmlFor="cost">Product cost</label>
+          <input
+            id="cost"
+            value={cost}
+            onChange={(e) => setCost(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleCreate();
+            }}
+          />
+        </div>
+
         <button onClick={handleCreate} disabled={!name.trim() || submitting}>
           {submitting ? 'Creating…' : 'Create'}
         </button>
@@ -58,7 +87,7 @@ function App() {
       ) : (
         <ul>
           {products.map((p) => (
-            <li key={p.id}>{p.name}</li>
+            <li key={p.id}>{p.name} - Price: {p.price}</li>
           ))}
         </ul>
       )}

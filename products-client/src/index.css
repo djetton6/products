@@ -5,3 +5,13 @@
 body {
   margin: 2rem;
 }
+.product-form {
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+}
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}

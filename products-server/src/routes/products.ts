@@ -7,6 +7,8 @@ export const productsRouter = Router();
 
 const CreateProduct = z.object({
   name: z.string().trim().min(1, 'Name is required').max(200),
+  price: z.coerce.number().finite().min(0, 'Price must be non-negative'),
+  cost: z.coerce.number().finite().min(0, 'Cost must be non-negative'),
 });
 
 function toDto(row: ProductRow): ProductDto {
@@ -14,10 +16,13 @@ function toDto(row: ProductRow): ProductDto {
 }
 
 productsRouter.get('/', async (_req, res) => {
+  
   const { rows } = await pool.query<ProductRow>(
-    'SELECT id, name FROM products ORDER BY id DESC'
+    'SELECT id, name, price, cost FROM products ORDER BY id DESC'
   );
+  console.log(`{rows}, I should be getting back, ${res.json}`)
   res.json(rows.map(toDto));
+
 });
 
 productsRouter.post('/', async (req, res) => {
@@ -28,8 +33,11 @@ productsRouter.post('/', async (req, res) => {
   }
 
   const { rows } = await pool.query<ProductRow>(
-    'INSERT INTO products (name) VALUES ($1) RETURNING id, name',
-    [parsed.data.name]
+    'INSERT INTO products (name, price, cost) VALUES ($1, $2, $3) RETURNING id, name, price, cost',
+    [parsed.data.name, parsed.data.price, parsed.data.cost]
   );
+  console.log(`${parsed} this is my parsed data`);
+
+
   res.status(201).json(toDto(rows[0]));
 });

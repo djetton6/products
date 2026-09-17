@@ -27,35 +27,35 @@ describe('application routes', () => {
   });
 
   it('lists products newest first', async () => {
-    query.mockResolvedValueOnce({ rows: [{ id: '1', name: 'P1' }] });
+    query.mockResolvedValueOnce({ rows: [{ id: '1', name: 'P1', price: '10.00', cost: '6.00' }] });
 
     await request(app)
       .get('/api/products')
-      .expect(200, [{ id: '1', name: 'P1' }]);
+      .expect(200, [{ id: '1', name: 'P1', price: '10.00', cost: '6.00' }]);
     expect(query).toHaveBeenCalledWith(
-      'SELECT id, name FROM products ORDER BY id DESC'
+      'SELECT id, name, price, cost FROM products ORDER BY id DESC'
     );
   });
 
   it('rejects an invalid product body', async () => {
     await request(app)
       .post('/api/products')
-      .send({ name: '   ' })
+      .send({ name: '   ', price: '10.00', cost: '6.00' })
       .expect(400)
       .expect(({ body }) => expect(body.error).toBe('invalid_body'));
     expect(query).not.toHaveBeenCalled();
   });
 
   it('creates a product with the trimmed name', async () => {
-    query.mockResolvedValueOnce({ rows: [{ id: '2', name: 'P2' }] });
+    query.mockResolvedValueOnce({ rows: [{ id: '2', name: 'P2', price: '10.00', cost: '6.00' }] });
 
     await request(app)
       .post('/api/products')
-      .send({ name: '  P2  ' })
-      .expect(201, { id: '2', name: 'P2' });
+      .send({ name: '  P2  ', price: '10.00', cost: '6.00' })
+      .expect(201, { id: '2', name: 'P2', price: '10.00', cost: '6.00' });
     expect(query).toHaveBeenCalledWith(
-      'INSERT INTO products (name) VALUES ($1) RETURNING id, name',
-      ['P2']
+      'INSERT INTO products (name, price, cost) VALUES ($1, $2, $3) RETURNING id, name, price, cost',
+      ['P2', 10, 6]
     );
   });
 });

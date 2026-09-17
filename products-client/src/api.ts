@@ -1,6 +1,14 @@
 export type Product = {
   id: string;
   name: string;
+  price: string;
+  cost: string;
+};
+
+export type CreateProductInput = {
+  name: string;
+  price: string;
+  cost: string;
 };
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
@@ -11,11 +19,11 @@ export async function fetchProducts(): Promise<Product[]> {
   return response.json();
 }
 
-export async function createProduct(name: string): Promise<Product> {
+export async function createProduct(product: CreateProductInput): Promise<Product> {
   const response = await fetch(`${API_URL}/api/products`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name }),
+    body: JSON.stringify(product),
   });
   if (!response.ok) {
     const body = await response.json().catch(() => ({}) as { error?: string });

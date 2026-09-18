@@ -3,6 +3,7 @@ export type Product = {
   name: string;
   price: string;
   cost: string;
+  markupPercent: number;
 };
 
 export type CreateProductInput = {

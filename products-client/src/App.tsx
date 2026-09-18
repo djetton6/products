@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { fetchProducts, createProduct, type Product } from './api';
 
+const MARKUP_FLOOR = 30;
+
 function App() {
   const [products, setProducts] = useState<Product[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [price, setPrice] = useState('');
-  const [cost, setCost] = useState('')
+  const [cost, setCost] = useState('');
   const [submitting, setSubmitting] = useState(false);
-
 
   useEffect(() => {
     fetchProducts()
@@ -23,11 +24,11 @@ function App() {
     setSubmitting(true);
     setError(null);
     try {
-      const created = await createProduct({ name: name.trim(), price, cost });
+      const created = await createProduct({ name: trimmed, price, cost });
       setProducts((prev) => (prev ? [created, ...prev] : [created]));
       setName('');
-      setPrice('')
-      setCost('')
+      setPrice('');
+      setCost('');
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to create product');
     } finally {
@@ -86,9 +87,15 @@ function App() {
         <p>No products yet.</p>
       ) : (
         <ul>
-          {products.map((p) => (
-            <li key={p.id}>{p.name} - Price: {p.price}</li>
-          ))}
+          {products.map((p) => {
+            const belowFloor = p.markupPercent < MARKUP_FLOOR;
+
+            return (
+              <li key={p.id} style={{ fontWeight: belowFloor ? 700 : 400 }}>
+                {p.name} - Price: {p.price} - Markup: {p.markupPercent}%
+              </li>
+            );
+          })}
         </ul>
       )}
     </main>

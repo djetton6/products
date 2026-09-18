@@ -11,18 +11,27 @@ const CreateProduct = z.object({
   cost: z.coerce.number().finite().min(0, 'Cost must be non-negative'),
 });
 
+function calculateMarkupPercent(price: string | number, cost: string | number): number {
+  const numericPrice = Number(price);
+  const numericCost = Number(cost);
+
+  if (numericCost === 0) return 0;
+  return Number((((numericPrice - numericCost) / numericCost) * 100).toFixed(2));
+}
+
 function toDto(row: ProductRow): ProductDto {
-  return row;
+  return {
+    ...row,
+    markupPercent: calculateMarkupPercent(row.price, row.cost),
+  };
 }
 
 productsRouter.get('/', async (_req, res) => {
-  
   const { rows } = await pool.query<ProductRow>(
     'SELECT id, name, price, cost FROM products ORDER BY id DESC'
   );
-  console.log(`{rows}, I should be getting back, ${res.json}`)
-  res.json(rows.map(toDto));
 
+  res.json(rows.map(toDto));
 });
 
 productsRouter.post('/', async (req, res) => {
@@ -36,8 +45,6 @@ productsRouter.post('/', async (req, res) => {
     'INSERT INTO products (name, price, cost) VALUES ($1, $2, $3) RETURNING id, name, price, cost',
     [parsed.data.name, parsed.data.price, parsed.data.cost]
   );
-  console.log(`${parsed} this is my parsed data`);
-
 
   res.status(201).json(toDto(rows[0]));
 });

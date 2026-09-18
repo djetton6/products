@@ -9,13 +9,16 @@ export type ProductRow = {
                 // strings (identifiers, not quantities) sidesteps it.
   name: string;
   price: string;
-  cost: string
+  cost: string;
+  markupPercent?: number;
 };
 
-export type ProductDto = ProductRow;
+export type ProductDto = ProductRow & {
+  markupPercent: number;
+};
 
 export type CreateProductInput = {
   name: string;
-  price: string,
-  cost: string,
+  price: string | number;
+  cost: string | number;
 };

@@ -26,12 +26,12 @@ describe('application routes', () => {
     expect(query).toHaveBeenCalledWith('SELECT 1');
   });
 
-  it('lists products newest first', async () => {
+  it('lists products newest first with markup percentage', async () => {
     query.mockResolvedValueOnce({ rows: [{ id: '1', name: 'P1', price: '10.00', cost: '6.00' }] });
 
     await request(app)
       .get('/api/products')
-      .expect(200, [{ id: '1', name: 'P1', price: '10.00', cost: '6.00' }]);
+      .expect(200, [{ id: '1', name: 'P1', price: '10.00', cost: '6.00', markupPercent: 66.67 }]);
     expect(query).toHaveBeenCalledWith(
       'SELECT id, name, price, cost FROM products ORDER BY id DESC'
     );
@@ -52,7 +52,7 @@ describe('application routes', () => {
     await request(app)
       .post('/api/products')
       .send({ name: '  P2  ', price: '10.00', cost: '6.00' })
-      .expect(201, { id: '2', name: 'P2', price: '10.00', cost: '6.00' });
+      .expect(201, { id: '2', name: 'P2', price: '10.00', cost: '6.00', markupPercent: 66.67 });
     expect(query).toHaveBeenCalledWith(
       'INSERT INTO products (name, price, cost) VALUES ($1, $2, $3) RETURNING id, name, price, cost',
       ['P2', 10, 6]
